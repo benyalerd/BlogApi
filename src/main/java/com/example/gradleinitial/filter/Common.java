@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Optional;
 
 @Component
 @Transactional
@@ -18,7 +22,7 @@ public class Common {
     @Autowired
     private RoleRepository roleRepository;
 
-    public Boolean checkRole(Long requestRole,String serviceName){
+    public Boolean checkAccessService(Long requestRole,String serviceName){
         var role = roleRepository.findById(requestRole);
         if(role != null) {
             String[] roleArr = role.get().getAccessService().split(",").clone();
@@ -30,4 +34,11 @@ public class Common {
         }
         return false;
     }
+
+    public Optional<Role> checkRole(Long requestRole){
+        var role = roleRepository.findById(requestRole);
+        return role;
+    }
+
+
 }

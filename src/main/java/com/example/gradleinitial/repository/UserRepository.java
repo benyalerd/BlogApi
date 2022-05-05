@@ -1,13 +1,15 @@
 package com.example.gradleinitial.repository;
 
-import javax.transaction.Transactional;
+import com.example.gradleinitial.model.Member;
 import com.example.gradleinitial.model.UserToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+
 @Repository
 @Transactional
-public interface UserTokenRepository extends JpaRepository<UserToken,Long>{
-    public UserToken findByToken(String token);
-    public UserToken findByMemberMemmerId(Long memberMemmerId);
+public interface UserRepository  extends JpaRepository<Member,Long> {
+    Member findByEmail(String email);
+
 }
