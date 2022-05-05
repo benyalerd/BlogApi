@@ -95,15 +95,8 @@ public class userController {
             log.info("email={} password={}",request.getEmail(),request.getPassword());
             var violations = validator.validate(request);
             log.info("violations = {}",violations);
-            if(!violations.isEmpty()){
-                var sb = new StringBuilder();
-                for(var violation:violations)
-                {
-                    sb.append(violation.getMessage());
-                    sb.append("\n");
-
-                }
-                var errorMessage = sb.toString();
+            if(!violations.isEmpty()){              
+                var errorMessage = violations.toString();
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
 
@@ -169,9 +162,9 @@ public class userController {
     }
 
     @PostMapping("refresh_token")
-    public ResponseEntity<Object> RefreshToken(@RequestBody refreshTokenRequest refrshToken)
+    public ResponseEntity<Object> refreshToken(@RequestBody refreshTokenRequest refrshToken)
     {
-        if(commonService.checkAccessService(refrshToken.getRole(), "setPassword")) {
+        if(commonService.checkAccessService(refrshToken.getRole(), "refreshToken")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         updateResponse response = new updateResponse();
