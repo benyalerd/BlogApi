@@ -42,6 +42,8 @@ public class UserService {
     @Autowired
     private FollowRepository followRepository;
 
+
+
     public Member registerUser(Member user)throws Throwable{
         Member isexistingEmail = userRepository.findByEmail(user.getEmail());
         if(isexistingEmail != null){
@@ -160,6 +162,18 @@ public class UserService {
         {
             return followRepository.findByFollowerId(userId,PageRequest.of(page, limit));
         }
+    }
+
+    public Follow addFollow(Follow newFollow){
+        return followRepository.save(newFollow);
+    }
+
+    public Follow unFollow(Long userId,Long authorId){
+        var follow = followRepository.findByFollowerIdAndFollowingId(userId,authorId);
+        if(follow == null) return null;
+
+        followRepository.delete(follow);
+        return follow;
     }
 
     //<editor-fold desc="Helper Method">

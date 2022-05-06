@@ -3,10 +3,7 @@ package com.example.gradleinitial.controller;
 import com.example.gradleinitial.dto.request.*;
 import com.example.gradleinitial.dto.response.*;
 import com.example.gradleinitial.filter.Common;
-import com.example.gradleinitial.model.Follow;
-import com.example.gradleinitial.model.Member;
-import com.example.gradleinitial.model.Role;
-import com.example.gradleinitial.model.UserToken;
+import com.example.gradleinitial.model.*;
 import com.example.gradleinitial.repository.RoleRepository;
 import com.example.gradleinitial.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +68,7 @@ public class userController {
                 if(newUser == null){
                     response.setIsEror(true);
                     response.setErrorCode("002");
-                    response.setErrorMsg("Existing E-mail");
+                    response.setErrorMsg("insert failed");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
@@ -331,5 +328,89 @@ public class userController {
         }
     }
 
+    @PostMapping("addFollow")
+    public ResponseEntity<Object> addFollow(@RequestBody addFollowRequest follow)
+    {
+        if(commonService.checkAccessService(follow.getRole(), "addFollow")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        insertResponse response = new insertResponse();
+        response.setErrorCode("200");
+        response.setErrorMsg("success");
+        response.setIsEror(false);
+        try{
+            var violations = validator.validate(follow);
+            log.info("violations = {}",violations);
+            var user = commonService.checkUser(follow.getUserId()).get();
+            var author = commonService.checkUser(follow.getAuthorId()).get();
+            if(!violations.isEmpty() || user == null || author == null)
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else
+            {
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+                        .setMatchingStrategy(MatchingStrategies.STRICT);
+
+                var requetFollow = new Follow();
+                requetFollow.setFollower(user);
+                requetFollow.setFollowing(author);
+
+                var newFollow = userService.addFollow (requetFollow);
+
+                if(newFollow == null){
+                    response.setIsEror(true);
+                    response.setErrorCode("002");
+                    response.setErrorMsg("Somthing Wrong");
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+                }
+
+                response.setInsertId(newFollow.getId());
+                return ResponseEntity.ok(response);
+            }
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("unfollow")
+    public ResponseEntity<Object> unFollow(@RequestBody addFollowRequest follow)
+    {
+        if(commonService.checkAccessService(follow.getRole(), "unFollow")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        deleteResponse response = new deleteResponse();
+        response.setErrorCode("200");
+        response.setErrorMsg("success");
+        response.setIsEror(false);
+        try{
+            var unFollow = userService.unFollow(follow.getUserId(), follow.getAuthorId());
+
+            if(unFollow == null){
+                response.setIsEror(true);
+                response.setErrorCode("002");
+                response.setErrorMsg("delete failed");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+
+            response.setDeleteId(unFollow.getId());
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 }

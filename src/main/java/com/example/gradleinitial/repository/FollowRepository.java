@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 @Transactional
 public interface FollowRepository extends JpaRepository<Follow,Long> {
-
     public Page<Follow> findByFollowerId(Long followerId, Pageable pageable);
     public Page<Follow> findByFollowingId(Long followingId, Pageable pageable);
+    public Follow findByFollowerIdAndFollowingId(Long followerId, Long followingId);
 }
