@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface UserTokenRepository extends JpaRepository<UserToken,Long>{
     public UserToken findByToken(String token);
-    public UserToken findByMemberMemmerId(Long memberMemmerId);
+    public UserToken findByMemberId(Long memberId);
 }

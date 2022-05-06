@@ -10,6 +10,5 @@ import javax.transaction.Transactional;
 @Repository
 @Transactional
 public interface ClientRepository  extends JpaRepository<Client,Long> {
-
-    Client findByClientName (String clientName);
+    public Client findByClientName (String clientName);
 }

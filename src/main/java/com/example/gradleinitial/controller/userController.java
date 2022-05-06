@@ -1,25 +1,27 @@
 package com.example.gradleinitial.controller;
 
-import com.example.gradleinitial.dto.request.loginRequest;
-import com.example.gradleinitial.dto.request.refreshTokenRequest;
-import com.example.gradleinitial.dto.request.registerUser;
-import com.example.gradleinitial.dto.request.setPasswordRequest;
-import com.example.gradleinitial.dto.response.insertResponse;
-import com.example.gradleinitial.dto.response.loginResponse;
-import com.example.gradleinitial.dto.response.updateResponse;
+import com.example.gradleinitial.dto.request.*;
+import com.example.gradleinitial.dto.response.*;
 import com.example.gradleinitial.filter.Common;
+import com.example.gradleinitial.model.Follow;
 import com.example.gradleinitial.model.Member;
+import com.example.gradleinitial.model.Role;
 import com.example.gradleinitial.model.UserToken;
+import com.example.gradleinitial.repository.RoleRepository;
 import com.example.gradleinitial.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Validator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -205,5 +207,129 @@ public class userController {
 
         }
     }
+
+    @PostMapping("update_user/{user_id}")
+    public ResponseEntity<Object> updateUser(@PathVariable("user_id") Long user_id ,@RequestBody editUserRequest newUser)
+    {
+        if(commonService.checkAccessService(newUser.getRole(), "editProfile")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        updateResponse response = new updateResponse();
+        response.setErrorCode("200");
+        response.setErrorMsg("success");
+        response.setIsEror(false);
+
+        try{
+
+            var violations = validator.validate(newUser);
+            log.info("violations = {}",violations);
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else
+            {
+
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+                        .setMatchingStrategy(MatchingStrategies.STRICT);
+
+                var user = userService.editProfile(user_id,mapper.map(newUser,Member.class));
+                if(user == null)
+                {
+                    response.setIsEror(true);
+                    response.setErrorCode("404");
+                    response.setErrorMsg("not found user token");
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+                }
+
+                response.setUpdateId(user.getId());
+                return ResponseEntity.ok(response);
+            }
+        } catch(Throwable t){
+
+            log.error("error occur={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+        }
+    }
+
+    @PostMapping("getListFollow")
+    public ResponseEntity<Object> getListFollow(@RequestBody getUserRequest request)
+    {
+        if(commonService.checkAccessService(request.getRole(), "getListFollow")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        ListUserResponse response = new ListUserResponse();
+        response.setErrorCode("200");
+        response.setErrorMsg("success");
+        response.setIsEror(false);
+
+        try{
+            var violations = validator.validate(request);
+            log.info("violations = {}",violations);
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else
+            {
+
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+                        .setMatchingStrategy(MatchingStrategies.STRICT);
+                if(request.getPage() <0)
+                {
+                    request.setPage(0);
+                }
+                if(request.getLimit() <= 0)
+                {
+                    request.setLimit(20);
+                }
+
+                    Page<Follow> user = userService.getListFollow(request.getUserId(), request.getRole(),request.getPage(),request.getLimit());
+                    List<getUserResponse> listUser = new ArrayList<>();
+                    if(user != null)
+                    {
+                        if(request.getRole() == 1) {
+                            for (int i = 0; i < user.getSize(); i++) {
+                               var follower =  mapper.map(user.getContent().get(i).getFollower(), getUserResponse.class);
+                                listUser.add(follower);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < user.getSize(); i++) {
+                                var following =  mapper.map(user.getContent().get(i).getFollowing(), getUserResponse.class);
+                                listUser.add(following);
+                            }
+                        }
+
+                        response.setListUser(listUser);
+                        response.setTotalRecord(user.getTotalElements());
+                    }
+
+
+                return ResponseEntity.ok(response);
+            }
+        }catch(Exception t){
+            log.error("error occur={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+        }
+    }
+
 
 }

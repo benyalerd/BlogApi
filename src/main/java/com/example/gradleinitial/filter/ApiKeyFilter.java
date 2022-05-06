@@ -44,6 +44,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
                 boolean isExpire = userService.checkExpireToken(userToken);
                 boolean isActive = userService.checkActiveToken(userToken);
                 if(!isExpire && isActive) {
+                    request.setAttribute("userId", userToken.getMember().getId());
                     filterChain.doFilter(request, response);
                     return;
                 }

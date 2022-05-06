@@ -2,19 +2,23 @@ package com.example.gradleinitial.service;
 
 import com.example.gradleinitial.dto.response.loginResponse;
 import com.example.gradleinitial.filter.Common;
+import com.example.gradleinitial.model.Follow;
 import com.example.gradleinitial.model.Member;
 import com.example.gradleinitial.model.UserToken;
 import com.example.gradleinitial.repository.ClientRepository;
+import com.example.gradleinitial.repository.FollowRepository;
 import com.example.gradleinitial.repository.UserRepository;
 import com.example.gradleinitial.repository.UserTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -31,8 +35,12 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private ClientRepository clientRepository;
+
     @Autowired
     private Common commonService;
+
+    @Autowired
+    private FollowRepository followRepository;
 
     public Member registerUser(Member user)throws Throwable{
         Member isexistingEmail = userRepository.findByEmail(user.getEmail());
@@ -133,11 +141,31 @@ public class UserService {
         return user;
     }
 
+    public Member editProfile(Long userId,Member user)throws Throwable{
+        var exitingUser = userRepository.findById(userId).get();
+        if(exitingUser == null) return null;
+
+        if(user.getImageprofile()!=null)exitingUser.setImageprofile(user.getImageprofile());
+        if(user.getUsername()!=null)exitingUser.setUsername(user.getUsername());
+
+        return userRepository.save(exitingUser);
+    }
+
+    public Page<Follow> getListFollow(Long userId, Long role, Integer page, Integer limit){
+
+        if(role == 1) {
+            return followRepository.findByFollowingId(userId,PageRequest.of(page, limit));
+        }
+        else
+        {
+            return followRepository.findByFollowerId(userId,PageRequest.of(page, limit));
+        }
+    }
 
     //<editor-fold desc="Helper Method">
 
     private UserToken updateToken(UserToken userToken,Long memberId){
-        var Token = userTokenRepository.findByMemberMemmerId(memberId);
+        var Token = userTokenRepository.findByMemberId(memberId);
         if(Token == null) return Token;
         if(!userToken.getToken().isEmpty() && userToken.getToken() != null){
             Token.setToken(userToken.getToken());
