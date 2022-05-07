@@ -40,7 +40,7 @@ public class articleController {
     @PostMapping("addArticle")
     public ResponseEntity<Object> addArticle(@RequestBody addArticleRequest article)
     {
-        if(commonService.checkAccessService(article.getRole(), "addArticle")) {
+        if(!commonService.checkAccessService(article.getRole(), "addArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         insertResponse response = new insertResponse();
@@ -101,7 +101,7 @@ public class articleController {
     @PostMapping("editArticle")
     public ResponseEntity<Object> editArticle(@RequestBody editArticleRequest article)
     {
-        if(commonService.checkAccessService(article.getRole(), "editArticle")) {
+        if(!commonService.checkAccessService(article.getRole(), "editArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         updateResponse response = new updateResponse();
@@ -161,7 +161,7 @@ public class articleController {
     @PostMapping("deleteArticle/{article_id}/{role_id}")
     public ResponseEntity<Object> deleteArticle(@PathVariable("article_id") Long article_id,@PathVariable("role_id") Long role_id)
     {
-        if(commonService.checkAccessService(role_id, "deleteArticle")) {
+        if(!commonService.checkAccessService(role_id, "deleteArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         deleteResponse response = new deleteResponse();
@@ -193,7 +193,7 @@ public class articleController {
     @PostMapping("subscribeArticle")
     public ResponseEntity<Object> subscribeArticle(@RequestBody subscribeArticleRequest subscribe)
     {
-        if(commonService.checkAccessService(subscribe.getRole(), "subscribeArticle")) {
+        if(!commonService.checkAccessService(subscribe.getRole(), "subscribeArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         insertResponse response = new insertResponse();
@@ -254,7 +254,7 @@ public class articleController {
     @PostMapping("unSubscribeArticle")
     public ResponseEntity<Object> unSubscribeArticle(@RequestBody subscribeArticleRequest unSubscribe)
     {
-        if(commonService.checkAccessService(unSubscribe.getRole(), "unSubscribeArticle")) {
+        if(!commonService.checkAccessService(unSubscribe.getRole(), "unSubscribeArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         deleteResponse response = new deleteResponse();

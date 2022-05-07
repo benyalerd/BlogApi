@@ -117,7 +117,7 @@ public class userController {
     @PostMapping("set_password/{user_id}")
     public ResponseEntity<Object> setPassword(@PathVariable("user_id") Long user_id , @RequestBody setPasswordRequest newPassword)
     {
-        if(commonService.checkAccessService(newPassword.getRole(), "setPassword")) {
+        if(!commonService.checkAccessService(newPassword.getRole(), "setPassword")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         updateResponse response = new updateResponse();
@@ -163,7 +163,7 @@ public class userController {
     @PostMapping("refresh_token")
     public ResponseEntity<Object> refreshToken(@RequestBody refreshTokenRequest refrshToken)
     {
-        if(commonService.checkAccessService(refrshToken.getRole(), "refreshToken")) {
+        if(!commonService.checkAccessService(refrshToken.getRole(), "refreshToken")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         updateResponse response = new updateResponse();
@@ -208,7 +208,7 @@ public class userController {
     @PostMapping("update_user/{user_id}")
     public ResponseEntity<Object> updateUser(@PathVariable("user_id") Long user_id ,@RequestBody editUserRequest newUser)
     {
-        if(commonService.checkAccessService(newUser.getRole(), "editProfile")) {
+        if(!commonService.checkAccessService(newUser.getRole(), "editProfile")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         updateResponse response = new updateResponse();
@@ -260,7 +260,7 @@ public class userController {
     @PostMapping("getListFollow")
     public ResponseEntity<Object> getListFollow(@RequestBody getUserRequest request)
     {
-        if(commonService.checkAccessService(request.getRole(), "getListFollow")) {
+        if(!commonService.checkAccessService(request.getRole(), "getListFollow")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         ListUserResponse response = new ListUserResponse();
@@ -298,14 +298,14 @@ public class userController {
                     if(user != null)
                     {
                         if(request.getRole() == 1) {
-                            for (int i = 0; i < user.getSize(); i++) {
+                            for (int i = 0; i < user.getContent().size(); i++) {
                                var follower =  mapper.map(user.getContent().get(i).getFollower(), getUserResponse.class);
                                 listUser.add(follower);
                             }
                         }
                         else
                         {
-                            for (int i = 0; i < user.getSize(); i++) {
+                            for (int i = 0; i < user.getContent().size(); i++) {
                                 var following =  mapper.map(user.getContent().get(i).getFollowing(), getUserResponse.class);
                                 listUser.add(following);
                             }
@@ -331,7 +331,7 @@ public class userController {
     @PostMapping("addFollow")
     public ResponseEntity<Object> addFollow(@RequestBody addFollowRequest follow)
     {
-        if(commonService.checkAccessService(follow.getRole(), "addFollow")) {
+        if(!commonService.checkAccessService(follow.getRole(), "addFollow")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         insertResponse response = new insertResponse();
@@ -384,7 +384,7 @@ public class userController {
     @PostMapping("unfollow")
     public ResponseEntity<Object> unFollow(@RequestBody addFollowRequest follow)
     {
-        if(commonService.checkAccessService(follow.getRole(), "unFollow")) {
+        if(!commonService.checkAccessService(follow.getRole(), "unFollow")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
         deleteResponse response = new deleteResponse();
