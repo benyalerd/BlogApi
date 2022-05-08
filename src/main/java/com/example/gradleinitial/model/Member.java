@@ -42,6 +42,7 @@ public class Member {
 
     @Column(name="CREATED_DATE")
     @CreatedDate
+    @Temporal(TemporalType.DATE)
     private Date createdDate;
 
     @Column(name="CREATED_BY")

@@ -1,6 +1,8 @@
 package com.example.gradleinitial.service;
 
+import com.example.gradleinitial.dto.enumm.Role;
 import com.example.gradleinitial.dto.response.loginResponse;
+import com.example.gradleinitial.dto.response.userDetailResponse;
 import com.example.gradleinitial.filter.Common;
 import com.example.gradleinitial.model.Follow;
 import com.example.gradleinitial.model.Member;
@@ -174,6 +176,15 @@ public class UserService {
 
         followRepository.delete(follow);
         return follow;
+    }
+
+    public userDetailResponse getUserDetail(Long userId, Long role){
+      if(role == Role.AUTHOR.getValue()){
+          return userRepository.findAuthorDetailByUserId(userId);
+      }
+      else{
+          return userRepository.findReaderDetailByUserId(userId);
+      }
     }
 
     //<editor-fold desc="Helper Method">

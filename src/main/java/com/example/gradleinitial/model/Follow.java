@@ -24,11 +24,13 @@ public class Follow {
     private Long id;
 
     @JoinColumn(name="FOLLOWER_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member follower;
 
     @JoinColumn(name="FOLLOWING_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member following;
     
 }

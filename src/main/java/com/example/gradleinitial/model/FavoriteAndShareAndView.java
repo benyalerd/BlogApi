@@ -24,11 +24,13 @@ public class FavoriteAndShareAndView {
     private Long id;
     
     @JoinColumn(name="ARTICLE_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Article article;
 
     @JoinColumn(name="MEMBER_ID")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @Column(name="ACTIVITY_TYPE")

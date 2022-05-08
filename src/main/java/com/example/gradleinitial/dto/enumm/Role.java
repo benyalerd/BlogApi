@@ -1,12 +1,13 @@
 package com.example.gradleinitial.dto.enumm;
-public enum ActivityType{
 
-    LIKE("like", 1), SHARE("share", 2), VIEW("view", 3);
+public enum Role{
+
+    AUTHOR("Author", new Long(1)), READER("Reader", new Long(2));
 
     private final String key;
-    private final Integer value;
+    private final Long value;
 
-    ActivityType(String key, Integer value) {
+    Role(String key, Long value) {
         this.key = key;
         this.value = value;
     }
@@ -14,10 +15,7 @@ public enum ActivityType{
     public String getKey() {
         return key;
     }
-    public Integer getValue() {
+    public Long getValue() {
         return value;
     }
 }
-
-
-

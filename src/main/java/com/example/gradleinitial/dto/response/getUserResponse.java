@@ -10,11 +10,9 @@ import com.example.gradleinitial.model.Role;
 import java.util.Date;
 
 @Data
-public class getUserResponse extends baseResponse {
-
+public class getUserResponse  {
     private String username;
     private String email;
-    private String password;
     private Role role;
     private String imageprofile;
     private Date createdDate;

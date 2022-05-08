@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Validator;
+
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -360,7 +362,7 @@ public class userController {
                 requetFollow.setFollower(user);
                 requetFollow.setFollowing(author);
 
-                var newFollow = userService.addFollow (requetFollow);
+                var newFollow = userService.addFollow(requetFollow);
 
                 if(newFollow == null){
                     response.setIsEror(true);
@@ -402,6 +404,44 @@ public class userController {
             }
 
             response.setDeleteId(unFollow.getId());
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("getUserDetail")
+    public ResponseEntity<Object> getUserDetail(@RequestBody getUserDetailRequest user)
+    {
+        if(!commonService.checkAccessService(user.getRole(), "getUserDetail")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        userDetailResponse response = new userDetailResponse();
+
+        try{
+            var violations = validator.validate(user);
+            log.info("violations = {}",violations);
+
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                response =   userService.getUserDetail(user.getUserId(), user.getRole());
+                log.info("result = {}",response);
+                
+            }
+            response.setErrorCode("200");
+            response.setErrorMsg("success");
+            response.setIsEror(false);
             return ResponseEntity.ok(response);
 
         }catch(Throwable t){

@@ -2,7 +2,10 @@ package com.example.gradleinitial.controller;
 
 
 import com.example.gradleinitial.dto.request.*;
+import com.example.gradleinitial.dto.response.ListArticleResponse;
+import com.example.gradleinitial.dto.response.articleDetailResponse;
 import com.example.gradleinitial.dto.response.deleteResponse;
+import com.example.gradleinitial.dto.response.getArticleResponse;
 import com.example.gradleinitial.dto.response.insertResponse;
 import com.example.gradleinitial.dto.response.updateResponse;
 import com.example.gradleinitial.filter.Common;
@@ -20,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 import javax.validation.Validator;
 
@@ -282,4 +287,143 @@ public class articleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PostMapping("searchArticle")
+    public ResponseEntity<Object> searchArticle(@RequestBody searchArticleRequest request)
+    {
+        if(!commonService.checkAccessService(request.getRole(), "searchArticle")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        ListArticleResponse response = new ListArticleResponse();
+
+        try{
+            var violations = validator.validate(request);
+            log.info("violations = {}",violations);
+
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                var result =   articleService.searchArticle(request);
+                log.info("result = {}",result);
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+            .setMatchingStrategy(MatchingStrategies.STRICT);
+            if(result != null)
+            {
+            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+            response.setListArticle(resultMapping);
+            response.setTotalRecord(result.getTotalElements());
+            }
+            }
+            response.setErrorCode("200");
+            response.setErrorMsg("success");
+            response.setIsEror(false);
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("getListArticleAuthor")
+    public ResponseEntity<Object> getListArticleAuthor(@RequestBody getListArticleAuthor request)
+    {
+        if(!commonService.checkAccessService(request.getRole(), "getListArticleAuthor")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        ListArticleResponse response = new ListArticleResponse();
+
+        try{
+            var violations = validator.validate(request);
+            log.info("violations = {}",violations);
+
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                var result =   articleService.getlistArticleAuthor(request.getUserId(),request.getPage(),request.getLimit());
+                log.info("result = {}",result);
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+            .setMatchingStrategy(MatchingStrategies.STRICT);
+            if(result != null)
+            {
+            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+            response.setListArticle(resultMapping);
+            response.setTotalRecord(result.getTotalElements());
+            }
+            }
+            response.setErrorCode("200");
+            response.setErrorMsg("success");
+            response.setIsEror(false);
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("getListArticleReader")
+    public ResponseEntity<Object> getListArticleReader(@RequestBody getListArticleReader request)
+    {
+        if(!commonService.checkAccessService(request.getRole(), "getListArticleReader")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        ListArticleResponse response = new ListArticleResponse();
+
+        try{
+            var violations = validator.validate(request);
+            log.info("violations = {}",violations);
+
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                var result =   articleService.getlistArticleReader(request.getActType(),request.getUserId(),request.getPage(),request.getLimit());
+                log.info("result = {}",result);
+                var mapper = new ModelMapper();
+                mapper.getConfiguration()
+            .setMatchingStrategy(MatchingStrategies.STRICT);
+            if(result != null)
+            {
+            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+            response.setListArticle(resultMapping);
+            response.setTotalRecord(result.getTotalElements());
+            }
+            }
+            response.setErrorCode("200");
+            response.setErrorMsg("success");
+            response.setIsEror(false);
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }
