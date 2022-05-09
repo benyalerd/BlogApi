@@ -31,11 +31,11 @@ public class Common {
     private UserRepository userRepository;
 
     public Boolean checkAccessService(Long requestRole,String serviceName){
-        var role = roleRepository.findById(requestRole);
-        if(role != null) {
-            String[] roleArr = role.get().getAccessService().split(",").clone();
-            for (String name : roleArr) {
-                if (name.equals(serviceName)) {
+        var accessService = roleRepository.findById(requestRole);
+        if(accessService != null) {
+            String[] listService = accessService.get().getAccessService().split(",").clone();
+            for (String service : listService) {
+                if (service.equals(serviceName)) {
                     return true;
                 }
             }

@@ -68,15 +68,4 @@ public class Member {
     @Column(name = "IMAGE_PROFILE")
     private String imageprofile;
 
-    @OneToMany(mappedBy = "author")
-    private List<Article> articles;
-
-    @OneToMany(mappedBy = "member")
-    private List<FavoriteAndShareAndView> ratings;
-
-    @OneToMany(mappedBy = "follower")
-    private List<Follow> followers;
-
-    @OneToMany(mappedBy = "following")
-    private List<Follow> followings;
 }

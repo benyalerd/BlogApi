@@ -8,7 +8,7 @@ import com.example.gradleinitial.model.Member;
 import lombok.Data;
 
 @Data
-public class articleDetailResponse {
+public class articleDetailResponse extends baseResponse {
     private Long id;
     private Member author;
     private String articleName;

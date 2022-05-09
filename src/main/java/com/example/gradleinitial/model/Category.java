@@ -49,6 +49,4 @@ public class Category {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(mappedBy = "category")
-    private List<Article> articles;
 }

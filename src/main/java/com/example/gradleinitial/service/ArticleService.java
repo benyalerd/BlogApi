@@ -1,6 +1,7 @@
 package com.example.gradleinitial.service;
 
 import com.example.gradleinitial.dto.request.searchArticleRequest;
+import com.example.gradleinitial.dto.response.articleDetailResponse;
 import com.example.gradleinitial.model.Article;
 import com.example.gradleinitial.model.FavoriteAndShareAndView;
 import com.example.gradleinitial.model.Member;
@@ -84,6 +85,12 @@ public class ArticleService {
         Specification<Article> spec = new PersonSpecification(request);
         Page<Article> listArticle =articleRepository.findAll(spec,PageRequest.of(request.getPage(),request.getLimit()));
         return listArticle;
+     }
+
+     public articleDetailResponse getArticleDetail(Long id)throws Throwable{
+        
+        return articleRepository.findArticleDetailByArticleId(id);
+
      }
 
 

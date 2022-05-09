@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class getListArticleReader extends getListArticleAuthor {
+public class baseRequest {
     @NotNull
-    private Integer actType;
+    private Long role;
 }

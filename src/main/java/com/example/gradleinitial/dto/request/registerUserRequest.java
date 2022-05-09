@@ -6,15 +6,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class registerUser {
+public class registerUserRequest  extends baseRequest {
     @NotBlank
     private String username;
     @NotBlank
     private String email;
     @NotBlank
     private String password;
-    @NotNull
-    private Long role;
     private String imageprofile;
 
 }

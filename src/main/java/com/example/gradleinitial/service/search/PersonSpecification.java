@@ -28,10 +28,10 @@ public class PersonSpecification implements Specification<Article>{
         Predicate p = criteriaBuilder.conjunction();
 
         if (CheckNullAndEmpty(filter.getArticleName())) {
-         p.getExpressions().add(criteriaBuilder.and(criteriaBuilder.like(root.get("articleName"), filter.getArticleName())));
+         p.getExpressions().add(criteriaBuilder.and(criteriaBuilder.like(root.get("articleName"), "%"+filter.getArticleName()+"%")));
         }
         if (filter.getCategoryId() != 0) {
-            p.getExpressions().add(criteriaBuilder.and(criteriaBuilder.equal(root.get("category_id"), filter.getCategoryId())));
+            p.getExpressions().add(criteriaBuilder.and(criteriaBuilder.equal(root.get("category"), filter.getCategoryId())));
            }
          
         return p;

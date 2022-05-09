@@ -37,7 +37,7 @@ public class userController {
 
 
     @PostMapping("register")
-    public ResponseEntity<Object> register(@RequestBody registerUser user)
+    public ResponseEntity<Object> register(@RequestBody registerUserRequest user)
     {
 
         insertResponse response = new insertResponse();
@@ -143,8 +143,8 @@ public class userController {
                 Member user = userService.setPassword(user_id, newPassword.getNewPassword());
                 if(user == null){
                     response.setIsEror(true);
-                    response.setErrorCode("404");
-                    response.setErrorMsg("not found user token");
+                    response.setErrorCode("003");
+                    response.setErrorMsg("not found user");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
             }
@@ -188,8 +188,8 @@ public class userController {
                 UserToken user = userService.RefreshToken(refrshToken.getToken());
                 if(user == null){
                     response.setIsEror(true);
-                    response.setErrorCode("404");
-                    response.setErrorMsg("not found user token");
+                    response.setErrorCode("003");
+                    response.setErrorMsg("not found user");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
             }
@@ -240,8 +240,8 @@ public class userController {
                 if(user == null)
                 {
                     response.setIsEror(true);
-                    response.setErrorCode("404");
-                    response.setErrorMsg("not found user token");
+                    response.setErrorCode("003");
+                    response.setErrorMsg("update failed");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
@@ -260,7 +260,7 @@ public class userController {
     }
 
     @PostMapping("getListFollow")
-    public ResponseEntity<Object> getListFollow(@RequestBody getUserRequest request)
+    public ResponseEntity<Object> getListFollow(@RequestBody getListUserRequest request)
     {
         if(!commonService.checkAccessService(request.getRole(), "getListFollow")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
@@ -367,7 +367,7 @@ public class userController {
                 if(newFollow == null){
                     response.setIsEror(true);
                     response.setErrorCode("002");
-                    response.setErrorMsg("Somthing Wrong");
+                    response.setErrorMsg("insert failed");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 

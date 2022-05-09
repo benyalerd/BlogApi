@@ -48,10 +48,12 @@ public class articleController {
         if(!commonService.checkAccessService(article.getRole(), "addArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         insertResponse response = new insertResponse();
         response.setErrorCode("200");
         response.setErrorMsg("success");
         response.setIsEror(false);
+
         try{
             var violations = validator.validate(article);
             log.info("violations = {}",violations);
@@ -86,7 +88,7 @@ public class articleController {
                 if(newArticle == null){
                     response.setIsEror(true);
                     response.setErrorCode("002");
-                    response.setErrorMsg("Existing E-mail");
+                    response.setErrorMsg("insert failed");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
@@ -109,15 +111,20 @@ public class articleController {
         if(!commonService.checkAccessService(article.getRole(), "editArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         updateResponse response = new updateResponse();
         response.setErrorCode("200");
         response.setErrorMsg("success");
         response.setIsEror(false);
+
         try{
             var violations = validator.validate(article);
             log.info("violations = {}",violations);
+
             var category = commonService.checkCategory(article.getCategoryId()).get();
+
             var user = commonService.checkUser(article.getUserId()).get();
+
             if(!violations.isEmpty() || (category == null&& article.getCategoryId() != 0))
             {
                 response.setIsEror(true);
@@ -139,15 +146,17 @@ public class articleController {
                         .setMatchingStrategy(MatchingStrategies.STRICT);
 
                 var requetArticle = mapper.map(article, Article.class);
+
                 if(article.getCategoryId() != 0) {
                     requetArticle.setCategory(category);
                 }
+
                 var updateArticle = articleService.editArticle (article.getArticleId(),requetArticle);
 
                 if(updateArticle == null){
                     response.setIsEror(true);
                     response.setErrorCode("002");
-                    response.setErrorMsg("Existing E-mail");
+                    response.setErrorMsg("update failed");
                     return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
 
@@ -169,17 +178,19 @@ public class articleController {
         if(!commonService.checkAccessService(role_id, "deleteArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         deleteResponse response = new deleteResponse();
         response.setErrorCode("200");
         response.setErrorMsg("success");
         response.setIsEror(false);
+
         try{
             var deleteArticle = articleService.deleteArticle(article_id);
 
             if(deleteArticle == null){
                 response.setIsEror(true);
                 response.setErrorCode("002");
-                response.setErrorMsg("Existing E-mail");
+                response.setErrorMsg("delete failed");
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             }
 
@@ -201,15 +212,20 @@ public class articleController {
         if(!commonService.checkAccessService(subscribe.getRole(), "subscribeArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         insertResponse response = new insertResponse();
         response.setErrorCode("200");
         response.setErrorMsg("success");
         response.setIsEror(false);
+
         try{
             var violations = validator.validate(subscribe);
             log.info("violations = {}",violations);
+
             var user = commonService.checkUser(subscribe.getUserId()).get();
+
             var article = commonService.checkArticle(subscribe.getArticleId()).get();
+
             if(!violations.isEmpty() || user == null || article == null)
             {
                 response.setIsEror(true);
@@ -262,10 +278,12 @@ public class articleController {
         if(!commonService.checkAccessService(unSubscribe.getRole(), "unSubscribeArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         deleteResponse response = new deleteResponse();
         response.setErrorCode("200");
         response.setErrorMsg("success");
         response.setIsEror(false);
+
         try{
             var delteUnSubscribe = articleService.unSubscribeArticle(unSubscribe.getActivityType(),unSubscribe.getArticleId(),unSubscribe.getUserId());
 
@@ -289,11 +307,12 @@ public class articleController {
     }
 
     @PostMapping("searchArticle")
-    public ResponseEntity<Object> searchArticle(@RequestBody searchArticleRequest request)
+    public Object searchArticle(@RequestBody searchArticleRequest request)
     {
         if(!commonService.checkAccessService(request.getRole(), "searchArticle")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
         }
+
         ListArticleResponse response = new ListArticleResponse();
 
         try{
@@ -310,12 +329,14 @@ public class articleController {
             else {
                 var result =   articleService.searchArticle(request);
                 log.info("result = {}",result);
+
                 var mapper = new ModelMapper();
                 mapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STRICT);
+
             if(result != null)
             {
-            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+            var resultMapping = result.getContent().stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
             response.setListArticle(resultMapping);
             response.setTotalRecord(result.getTotalElements());
             }
@@ -354,14 +375,26 @@ public class articleController {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             }
             else {
+
+                if(request.getPage() <0)
+                {
+                    request.setPage(0);
+                }
+                if(request.getLimit() <= 0)
+                {
+                    request.setLimit(20);
+                }
+
                 var result =   articleService.getlistArticleAuthor(request.getUserId(),request.getPage(),request.getLimit());
                 log.info("result = {}",result);
+
                 var mapper = new ModelMapper();
                 mapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STRICT);
+
             if(result != null)
             {
-            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+            var resultMapping = result.getContent().stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
             response.setListArticle(resultMapping);
             response.setTotalRecord(result.getTotalElements());
             }
@@ -402,12 +435,22 @@ public class articleController {
             else {
                 var result =   articleService.getlistArticleReader(request.getActType(),request.getUserId(),request.getPage(),request.getLimit());
                 log.info("result = {}",result);
+               
                 var mapper = new ModelMapper();
                 mapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STRICT);
+            
             if(result != null)
             {
-            var resultMapping = result.stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
+                if(request.getPage() <0)
+                {
+                    request.setPage(0);
+                }
+                if(request.getLimit() <= 0)
+                {
+                    request.setLimit(20);
+                }
+            var resultMapping = result.getContent().stream().map(p -> mapper.map(p,getArticleResponse.class)).collect(Collectors.toList());
             response.setListArticle(resultMapping);
             response.setTotalRecord(result.getTotalElements());
             }
@@ -425,5 +468,44 @@ public class articleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PostMapping("getArticleDetail")
+    public ResponseEntity<Object> getUserDetail(@RequestBody getArticleDetailRequest article)
+    {
+        if(!commonService.checkAccessService(article.getRole(), "getArticleDetail")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZE");
+        }
+        articleDetailResponse response = new articleDetailResponse();
+
+        try{
+            var violations = validator.validate(article);
+            log.info("violations = {}",violations);
+
+            if(!violations.isEmpty())
+            {
+                response.setIsEror(true);
+                response.setErrorCode("001");
+                response.setErrorMsg("invalid request");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                response =   articleService.getArticleDetail(article.getArticleId());
+                log.info("result = {}",response);
+                
+            }
+            response.setErrorCode("200");
+            response.setErrorMsg("success");
+            response.setIsEror(false);
+            return ResponseEntity.ok(response);
+
+        }catch(Throwable t){
+            log.error("error occur ={}",t.getMessage());
+            response.setIsEror(true);
+            response.setErrorCode("500");
+            response.setErrorMsg("exception or server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 }

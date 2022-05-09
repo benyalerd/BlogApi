@@ -6,9 +6,8 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class setPasswordRequest {
+public class setPasswordRequest extends baseRequest {
     @NotBlank
     private String newPassword;
-    @NotNull
-    private Long role;
+    
 }

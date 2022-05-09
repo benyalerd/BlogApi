@@ -33,18 +33,15 @@ public class UserService {
 
     @Autowired
     private UserTokenRepository userTokenRepository;
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private ClientRepository clientRepository;
 
     @Autowired
-    private Common commonService;
-
-    @Autowired
     private FollowRepository followRepository;
-
-
 
     public Member registerUser(Member user)throws Throwable{
         Member isexistingEmail = userRepository.findByEmail(user.getEmail());
@@ -96,6 +93,7 @@ public class UserService {
                         Calendar expire = Calendar.getInstance();
                         expire.add(Calendar.SECOND,consentLifetime.intValue());
                         log.info("login service expire={}",expire.getTime());
+                        
                         userToken.setStartDate(startDate);
                         userToken.setExpireDate(expire.getTime());
                     }
@@ -111,14 +109,11 @@ public class UserService {
                         userTokenRepository.save(userToken);
                     }
                     return response;
-
             }
-
         }
-
         return null;
-
     }
+
     public Member setPassword(Long userId,String password)throws Throwable{
         var user = userRepository.findById(userId).get();
         if(user!= null)
@@ -138,8 +133,10 @@ public class UserService {
             Date currentDate = Calendar.getInstance().getTime();
             Calendar expireDate = Calendar.getInstance();
             expireDate.add(Calendar.SECOND,consentLifetime.intValue());
+
             user.setExpireDate(expireDate.getTime());
             user.setRefreshDateTime(currentDate);
+            
             userTokenRepository.save(user);
         }
         return user;
