@@ -4,7 +4,6 @@ import com.example.gradleinitial.dto.request.*;
 import com.example.gradleinitial.dto.response.*;
 import com.example.gradleinitial.filter.Common;
 import com.example.gradleinitial.model.*;
-import com.example.gradleinitial.repository.RoleRepository;
 import com.example.gradleinitial.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -17,10 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Validator;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
