@@ -125,7 +125,7 @@ public class UserService {
         return user;
     }
 
-    public UserToken RefreshToken(String token)throws Throwable{
+    public UserToken refreshToken(String token)throws Throwable{
         UserToken user = userTokenRepository.findByToken(token);
         if(user!= null)
         {

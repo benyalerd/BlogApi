@@ -19,7 +19,7 @@ public class PersonSpecification implements Specification<Article>{
         this.filter = filter;
     }
     
-    public boolean CheckNullAndEmpty(String text)
+    public boolean checkNullAndEmpty(String text)
     {
         return text != null && !text.isEmpty();
     }
@@ -27,7 +27,7 @@ public class PersonSpecification implements Specification<Article>{
     public Predicate toPredicate(Root<Article> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate p = criteriaBuilder.conjunction();
 
-        if (CheckNullAndEmpty(filter.getArticleName())) {
+        if (checkNullAndEmpty(filter.getArticleName())) {
          p.getExpressions().add(criteriaBuilder.and(criteriaBuilder.like(root.get("articleName"), "%"+filter.getArticleName()+"%")));
         }
         if (filter.getCategoryId() != 0) {
